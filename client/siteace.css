@@ -1,0 +1,13 @@
+/* CSS declarations go here */
+.hidden_div{
+	display:none;
+}
+
+.comment .media-object {
+	width: 48px;
+	height: 48px;
+}
+
+.comment ul {
+	padding: 0;
+}
