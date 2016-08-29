@@ -116,14 +116,11 @@ Template.website_detail.events({
     "submit .js-save-comment-form":function(event){
         var website_id = this._id;
         var comment = event.target.comment.value.trim();
-        var saveWebsite = this;
 
+        // Add comment
         if (Meteor.user() && comment.length > 0) {
-            saveWebsite.comments.push({
-                userId: Meteor.userId(),
-                text: comment
-            });
-            Websites.update({_id: website_id}, saveWebsite);
+            Meteor.call('addComment', website_id, comment);
+            return false;
         }
     }
 })
@@ -135,22 +132,12 @@ Template.website_form.events({
     "submit .js-save-website-form":function(event){
 
         // here is an example of how to get the url out of the form:
-        var url = event.target.url.value;
-        var description = event.target.description.value;
-        var title = event.target.title.value;
+        var url = event.target.url.value.trim();
         console.log("The url they entered is: "+url);
         
         //  put your website saving code in here!
-        if (Meteor.user()){
-            Websites.insert({
-                title: title, 
-                url: url,
-                description: description,
-                vote: 0,
-                createdOn:new Date(),
-                comments: []
-            }); 
-
+        if (Meteor.user() && url.length > 0){
+            Meteor.call('addWebsite', url);
             return false;// stop the form submit from reloading the page
         }
     }
@@ -158,7 +145,7 @@ Template.website_form.events({
 
 Template.comment.helpers({
     user: function(event){
-        var user_id = this.userId;
+        var user_id = this.createdBy;
         var user = Meteor.users.findOne(user_id);
         return user;
     }

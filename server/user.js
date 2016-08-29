@@ -7,8 +7,6 @@ Accounts.onCreateUser(function(options, user) {
     }
 
     user.profile = profile;
-    console.log('user: ');
-    console.log(user);
 
     // Don't forget to return the new user object at the end!
     return user;
