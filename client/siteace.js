@@ -17,7 +17,7 @@ Router.route('/websites', function () {
   this.render('navbar', {
     to:"navbar"
   });
-  this.render('home', {
+  this.render('website_list', {
     to:"main"
   });
 });
@@ -29,7 +29,11 @@ Router.route('/websites/:_id', function () {
   this.render('website_detail', {
     to:"main", 
     data:function(){
-      return Websites.findOne({_id:this.params._id});
+        var web = Websites.findOne({_id: this.params._id});
+        if (web) {
+            web.date = moment(web.createdOn).format("MMMM Do YYYY");
+            return web;
+        }        
     }
   });
 });
@@ -57,7 +61,6 @@ var eventVote = {
         // example of how you can access the id for the website in the database
         // (this is the data context for the template)
         var website_id = this._id;
-        console.log("Up voting website with id "+website_id);
         // put the code in here to add a vote to a website!
         Websites.update({_id: website_id}, {
             $inc: {vote: 1},
@@ -70,7 +73,6 @@ var eventVote = {
         // example of how you can access the id for the website in the database
         // (this is the data context for the template)
         var website_id = this._id;
-        console.log("Down voting website with id "+website_id);
 
         // put the code in here to remove a vote from a website!
         if (this.vote > 0) {
@@ -97,7 +99,12 @@ var isPlural = {
 // helper function that returns all available websites
 Template.website_list.helpers({
     websites:function(){
-        return Websites.find({}, {sort:{vote: -1}});
+        //return Websites.find({}, {sort:{vote: -1}});
+        var webs = Websites.find({}, {sort:{vote: -1}}).fetch();
+        webs.forEach(function(web){
+            web.date = moment(web.createdOn).format("MMMM Do YYYY");
+        });
+        return webs;
     }
 });
 
@@ -105,6 +112,15 @@ Template.website_list.helpers({
 /////
 // template events 
 /////
+
+Template.home.onRendered(function() {
+    $('.search-box').find('input:text').addClass("form-control");
+    $('.search-box').find('input:text').attr('placeholder', 'Search what are you looking for?');
+});
+
+Template.searchBox.helpers({
+    webIndex: () => WebIndex
+});
 
 Template.website_item.events(eventVote);
 Template.website_item.helpers(isPlural);
@@ -120,10 +136,21 @@ Template.website_detail.events({
         // Add comment
         if (Meteor.user() && comment.length > 0) {
             Meteor.call('addComment', website_id, comment);
+            event.target.comment.value = "";
             return false;
         }
     }
-})
+});
+
+Template.website_detail.helpers({
+    comments: function(event) {
+        var comments = Comments.find({websiteId: this._id}).fetch();
+        comments.forEach(function(comment) {
+            comment.createdOn = moment(comment.createdOn).fromNow();
+        });
+        return comments;
+    }
+});
 
 Template.website_form.events({
     "click .js-toggle-website-form":function(event){
@@ -133,7 +160,6 @@ Template.website_form.events({
 
         // here is an example of how to get the url out of the form:
         var url = event.target.url.value.trim();
-        console.log("The url they entered is: "+url);
         
         //  put your website saving code in here!
         if (Meteor.user() && url.length > 0){

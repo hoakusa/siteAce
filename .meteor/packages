@@ -27,4 +27,7 @@ shell-server
 aldeed:simple-schema
 aldeed:collection2
 http
-pete:jsdom
+webapp
+mrt:moment
+easy:search
+easysearch:autosuggest

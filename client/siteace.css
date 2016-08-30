@@ -1,13 +1,38 @@
 /* CSS declarations go here */
 .hidden_div{
-	display:none;
+    display:none;
 }
 
 .comment .media-object {
-	width: 48px;
-	height: 48px;
+    width: 48px;
+    height: 48px;
 }
 
 .comment ul {
-	padding: 0;
+    padding: 0;
+}
+
+.search-box {
+    padding-top: 44px;
+}
+
+.search-box input {
+    height: 44px;
+}
+
+.search-results{
+    padding-top: 28px;
+}
+
+.search-result {
+    margin-bottom: 28px;
+}
+
+.web-url {
+    color: #006621;
+    margin-bottom: 0;
+}
+
+.web-date {
+    color: #4a4a4a;
 }
